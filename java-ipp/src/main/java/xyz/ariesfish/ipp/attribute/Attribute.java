@@ -2,8 +2,7 @@ package xyz.ariesfish.ipp.attribute;
 
 import lombok.Getter;
 import lombok.Setter;
-import xyz.ariesfish.ipp.value.Value;
-import xyz.ariesfish.ipp.value.ValueMember;
+import xyz.ariesfish.ipp.value.*;
 
 import java.util.ArrayList;
 
@@ -13,17 +12,14 @@ public class Attribute {
     @Setter
     private String name;
 
-    @Getter
-    @Setter
     private ArrayList<ValueMember> values;
 
     public Attribute() {
-
+        this("");
     }
 
     public Attribute(String name) {
-        this.name = name;
-        this.values = new ArrayList<>();
+        this(name, new ArrayList<ValueMember>());
     }
 
     public Attribute(String name, Tag valueTag, Value value) {
@@ -49,8 +45,66 @@ public class Attribute {
         return addValue(new ValueMember(tag, value));
     }
 
+    public ValueMember getValueMember(int index) {
+        return values.get(index);
+    }
+
+    public void setValue(int index, Value value) {
+        values.get(index).setValue(value);
+    }
+
+    public void setTag(int index, Tag tag) {
+        values.get(index).setTag(tag);
+    }
+
+    public int valueSize() {
+        return values.size();
+    }
+
     public boolean unpackValue(Tag tag, byte[] data) {
-        return false;
+        boolean result = false;
+        Value value;
+
+        switch (tag.getType()) {
+            case NONE:
+            case COLLECTION:
+                value = new NoneValue();
+                break;
+            case INTEGER:
+                value = new IntValue();
+                break;
+            case BOOLEAN:
+                value = new BooleanValue();
+                break;
+            case STRING:
+                value = new StringValue();
+                break;
+            case DATETIME:
+                value = new DateTimeValue();
+                break;
+            case RESOLUTION:
+                value = new ResolutionValue();
+                break;
+            case RANGE:
+                value = new RangeValue();
+                break;
+            case TEXT_WITH_LANG:
+                value = new TextWithLangValue();
+                break;
+            case BINARY:
+                value = new BinaryValue();
+                break;
+            default:
+                // TODO: log error
+                return false;
+        }
+
+        if (value.decode(data)) {
+            addValue(tag, value);
+            result = true;
+        }
+
+        return result;
     }
 
     @Override

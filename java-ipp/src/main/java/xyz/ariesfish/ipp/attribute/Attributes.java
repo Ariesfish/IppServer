@@ -11,4 +11,13 @@ public class Attributes extends ArrayList<Attribute> {
     public Attributes(Tag t) {
         groupTag = t;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Attribute attr : this) {
+            builder.append(attr.toString()).append("\n");
+        }
+        return builder.toString();
+    }
 }

@@ -2,10 +2,7 @@ package xyz.ariesfish.ipp.codec;
 
 import lombok.Getter;
 import lombok.Setter;
-import xyz.ariesfish.ipp.attribute.Attribute;
-import xyz.ariesfish.ipp.attribute.Attributes;
-import xyz.ariesfish.ipp.attribute.Tag;
-import xyz.ariesfish.ipp.attribute.Version;
+import xyz.ariesfish.ipp.attribute.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -91,15 +88,42 @@ public class Packet {
 
     @Override
     public String toString() {
-        return "Packet{" +
-                "version=" + version +
-                ", code=" + code +
-                ", requestId=" + requestId +
-                ", isRequest=" + isRequest +
-                ", operations=" + operations +
-                ", jobs=" + jobs +
-                ", printers=" + printers +
-                ", unsupported=" + unsupported +
-                '}';
+        StringBuilder builder = new StringBuilder();
+        if (isRequest) {
+            builder.append("IPP Request");
+        } else {
+            builder.append("IPP Response");
+        }
+        builder.append("\n");
+
+        builder.append("Version: ").append(version).append("\n");
+        builder.append("Code: ");
+        if (isRequest) {
+            builder.append(Operation.description(code));
+        } else {
+            builder.append(Status.description(code));
+        }
+        builder.append("\n");
+
+        builder.append("Request ID: ").append(requestId).append("\n");
+
+        if (!operations.isEmpty()) {
+            builder.append("Operation Attributes:").append("\n");
+            builder.append(operations);
+        }
+        if (!jobs.isEmpty()) {
+            builder.append("Job Attributes:").append("\n");
+            builder.append(jobs);
+        }
+        if (!printers.isEmpty()) {
+            builder.append("Printer Attributes:").append("\n");
+            builder.append(printers);
+        }
+        if (!unsupported.isEmpty()) {
+            builder.append("Unsupported Attributes:").append("\n");
+            builder.append(unsupported);
+        }
+
+        return builder.toString();
     }
 }

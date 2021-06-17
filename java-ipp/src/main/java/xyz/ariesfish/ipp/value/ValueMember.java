@@ -20,9 +20,10 @@ public class ValueMember {
 
     @Override
     public String toString() {
-        return "ValueMember{" +
-                "tag=" + tag +
-                ", value=" + value +
-                '}';
+        if (tag.getTag() != Tag.BEGIN_COLLECTION) {
+            return String.format("%s [%s]", value, tag);
+        } else {
+            return value.toString();
+        }
     }
 }
